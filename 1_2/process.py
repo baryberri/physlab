@@ -26,10 +26,7 @@ def main():
     for i in range(len(result_times)):
         result_to_write.append(result_degrees[i])
 
-    print(result_to_write)
-    result_transposed = np.transpose(result_to_write).tolist()
-    print(result_transposed)
-    writer.write_2d(result_transposed)
+    writer.write_2d(result_to_write)
 
 
 if __name__ == '__main__':
