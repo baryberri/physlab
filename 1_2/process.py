@@ -7,7 +7,8 @@ def main():
     tables = TableImporter()
     writer = CSVWriter()
 
-    data_to_write = []
+    result_times = []
+    result_degrees = []
     table = tables.get_table()
     while table is not None:
         times = get_times(table)
@@ -16,14 +17,19 @@ def main():
         positive_atan = atan_to_positive(atan)
         accumulated_atan = accumulate_degree(positive_atan)
         resulting_degree = set_starting_point_to_zero(accumulated_atan)
-        regression_result = regression(times, resulting_degree)
-        r2 = coefficient_of_determination(times, resulting_degree, regression_result)
-        i = momentum_of_inertial(regression_result)
-        writer.write([regression_result[0], regression_result[1], regression_result[2], r2, i])
+        result_times.append(times)
+        result_degrees.append(resulting_degree)
 
         table = tables.get_table()
 
-    writer.write(data_to_write)
+    result_to_write = [result_times[0]]
+    for i in range(len(result_times)):
+        result_to_write.append(result_degrees[i])
+
+    print(result_to_write)
+    result_transposed = np.transpose(result_to_write).tolist()
+    print(result_transposed)
+    writer.write_2d(result_transposed)
 
 
 if __name__ == '__main__':
