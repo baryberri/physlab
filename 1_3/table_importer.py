@@ -13,7 +13,7 @@ class TableImporter:
 
         file_url = self.files.pop()
         print("Processing {}...".format(file_url))
-        with open(file_url, "r") as file:
+        with open(file_url, "r", encoding='cp949') as file:
             table = file.readlines()
 
             if header:

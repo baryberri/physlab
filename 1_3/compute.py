@@ -1,64 +1,39 @@
 import math
 
 
-def compute_x_velocity(table):
-    """
-    Compute x-axis velocity, assuming it is always constant.
-    """
-    index = len(table) - 1
-
-    dt = table[index][0] - table[0][0]
-    dx = (table[0][1] - table[index][1]) * 0.01
-
-    return dx / dt
+def get_1d_data(table, index):
+    result = []
+    for row in table:
+        result.append(row[index])
+    return result
 
 
-def compute_initial_velocity(x_velocity, degree):
-    """
-    Compute v0, with given x_velocity and degree.
-    """
-    return x_velocity / math.cos(degree * math.pi / 180)
+def filter_descending_movement(data):
+    result = []
+    for i in range(len(data)):
+        if data[i] > data[i + 1]:
+            result.append(data[i])
+        else:
+            break
+    return result
 
 
-def compute_y_at_times(initial_velocity, degree, times_to_compute):
-    """
-    Return y(t) for given t.
-    """
-    y = []
-    term_1 = initial_velocity * math.sin(degree * math.pi / 180)
-    term_2 = 9.80665 / 2
-    for t in times_to_compute:
-        y.append(term_1 * t - term_2 * t * t)
-    return y
+def change_to_meter(data):
+    result = []
+    for h in data:
+        h_in_meter = 0.01 * (h + 9.577) + 0.68242641
+        result.append(h_in_meter)
+    return result
 
 
-def get_ys(table):
-    """
-    get dy.
-    """
-    initial_y = table[0][2]
-    ys = []
-    for i in range(len(table)):
-        ys.append((table[i][2] - initial_y) * 0.01)
-    return ys
+def theoretical_time(start_point, end_point, h, r, d):
+    reff_squared = (r ** 2) - ((d / 2) ** 2)
+    k = (r ** 2) / reff_squared
+    g = 9.80665
+    start_h = start_point[1]
+    end_h = end_point[1]
+    return math.sqrt((2 + 0.8 * k) / g) * (2 / math.sqrt(2)) * (((h - end_h) ** 0.5) - ((h - start_h) ** 0.5))
 
 
-def get_times(table):
-    """
-    extract time to compute.
-    """
-    time = []
-    for i in range(len(table)):
-        time.append(table[i][0])
-    return time
-
-
-def rms(ys, theory_ys):
-    """
-    Compute rms.
-    """
-    result = 0
-    for i in range(len(ys)):
-        result += ((ys[i] - theory_ys[i]) ** 2)
-    result /= len(ys)
-    return math.sqrt(result)
+def get_h(mark):
+    return 0.64 + 0.01 * (10 - mark) * (math.sqrt(2) / 2)
