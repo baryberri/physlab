@@ -6,3 +6,7 @@ __pycache__/
 
 # PyCharm
 .idea/
+
+# Input and output directory
+input/
+output/
