@@ -1,4 +1,5 @@
 import math
+import numpy as np
 
 
 def get_column(table, index):
@@ -53,3 +54,15 @@ def slice(table, index, value):
         else:
             break
     return result
+
+
+def average(values):
+    result = 0
+    for value in values:
+        result += value
+    return result / len(values)
+
+
+def linear_regression(x, y):
+    result = np.polyfit(x, y, 1)
+    return result[0]
