@@ -49,10 +49,8 @@ def rpm_to_rad_per_sec(rpm):
 def slice(table, index, value):
     result = []
     for row in table:
-        if row[index] <= value:
+        if value[0] <= row[index] <= value[1]:
             result.append(row)
-        else:
-            break
     return result
 
 
