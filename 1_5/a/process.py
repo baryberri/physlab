@@ -4,35 +4,31 @@ from compute import *
 
 
 def main():
-    r = 0.038 / 2
-    d = 0.024
-    mark = 30
-
     tables = TableImporter()
     writer = CSVWriter()
 
     table = tables.get_table()
 
-    writer.string_write(["theory", "exp", "error"])
-
     while table is not None:
-        times = get_1d_data(table, 0)
-        ys = get_1d_data(table, 2)
-        h = get_h(mark)
-        valid_ys = filter_descending_movement(ys)
-        valid_ys_in_meter = change_to_meter(valid_ys)
+        time = get_column(table, 0)
+        moving_xs = get_column(table, 3)
+        moving_ys = get_column(table, 4)
 
-        start_point = (times[1], valid_ys_in_meter[1])
-        end_point = (times[len(valid_ys) - 2], valid_ys_in_meter[len(valid_ys_in_meter) - 2])
+        past_degree = get_degree(moving_xs, moving_ys, 0)
+        past_abs_dx = 0
+        for i in range(1, len(table)):
+            deg = get_degree(moving_xs, moving_ys, i)
+            if deg is None:
+                continue
 
-        exp_time = end_point[0] - start_point[0]
-        theory_time = theoretical_time(start_point, end_point, h, r, d)
-        error = (exp_time - theory_time) / theory_time * 100
+            if abs(past_degree - deg) >= 10 and past_abs_dx > 1:
+                print(i, time[i])
+                break
 
-        writer.write([theory_time, exp_time, error])
+            past_degree = deg
+            past_abs_dx = get_abs_dx(moving_xs, i)
 
         table = tables.get_table()
-
 
 
 if __name__ == '__main__':
