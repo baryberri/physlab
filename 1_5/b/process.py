@@ -20,6 +20,7 @@ def main():
         before_speed = get_speed(xs, ys, time, turning_point - 1, -3)
         after_speed = get_speed(xs, ys, time, turning_point + 1, 3)
         print(before_speed, after_speed)
+        print(get_incidence_reflection_angle(xs, ys, turning_point)[1])
 
         table = tables.get_table()
 
