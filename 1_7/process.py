@@ -4,27 +4,36 @@ from compute import *
 
 
 def main():
+    r = 0.038 / 2
+    d = 0.024
+    mark = 30
+
     tables = TableImporter()
     writer = CSVWriter()
-    table = tables.get_table(delimiter=",", header=5, footer=7)
 
-    error_rate_result = []
-    step = 3
+    table = tables.get_table()
+
+    writer.string_write(["theory", "exp", "error"])
 
     while table is not None:
-        consistent_table = slice(table, 0, [15, 45])
-        average_rpm = average(get_column(consistent_table, 3))
-        w = rpm_to_rad_per_sec(average_rpm)
+        times = get_1d_data(table, 0)
+        ys = get_1d_data(table, 2)
+        h = get_h(mark)
+        valid_ys = filter_descending_movement(ys)
+        valid_ys_in_meter = change_to_meter(valid_ys)
 
-        theory_rotation = compute_theory_rotation(step_to_length(step), w)
-        experiment_degree = linear_regression(get_column(consistent_table, 0), get_column(consistent_table, 1))
-        experiment_rotation = degree_to_radian(experiment_degree)
+        start_point = (times[1], valid_ys_in_meter[1])
+        end_point = (times[len(valid_ys) - 2], valid_ys_in_meter[len(valid_ys_in_meter) - 2])
 
-        error_rate_result.append((experiment_rotation - theory_rotation) / theory_rotation * 100)
+        exp_time = end_point[0] - start_point[0]
+        theory_time = theoretical_time(start_point, end_point, h, r, d)
+        error = (exp_time - theory_time) / theory_time * 100
 
-        table = tables.get_table(delimiter=",", header=5, footer=7)
+        writer.write([theory_time, exp_time, error])
 
-    writer.write(error_rate_result)
+        table = tables.get_table()
+
+
 
 if __name__ == '__main__':
     main()
