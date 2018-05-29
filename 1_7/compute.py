@@ -1,39 +1,35 @@
 import math
 
 
-def get_1d_data(table, index):
+def get_column(table, column):
     result = []
     for row in table:
-        result.append(row[index])
+        result.append(row[column])
     return result
 
 
-def filter_descending_movement(data):
+def get_min_max(table, column):
+    result = [table[0]]
+    for i in range(1, len(table) - 1):
+        previous_row = table[i - 1][column]
+        current_row = table[i][column]
+        next_row = table[i + 1][column]
+        if current_row <= previous_row and current_row <= next_row and current_row != result[-1][column]:
+            result.append(table[i])
+        elif current_row >= previous_row and current_row >= next_row and current_row != result[-1][column]:
+            result.append(table[i])
+    return result[1:]
+
+
+def get_period(min_max_table):
     result = []
-    for i in range(len(data)):
-        if data[i] > data[i + 1]:
-            result.append(data[i])
-        else:
-            break
+    for i in range(len(min_max_table) - 2):
+        result.append(min_max_table[i + 2][0] - min_max_table[i][0])
     return result
 
 
-def change_to_meter(data):
+def get_amplitude(min_max_table, column):
     result = []
-    for h in data:
-        h_in_meter = 0.01 * (h + 9.577) + 0.68242641
-        result.append(h_in_meter)
+    for i in range(len(min_max_table) - 1):
+        result.append(abs(min_max_table[i + 1][column] - min_max_table[i][column]) / 100)
     return result
-
-
-def theoretical_time(start_point, end_point, h, r, d):
-    reff_squared = (r ** 2) - ((d / 2) ** 2)
-    k = (r ** 2) / reff_squared
-    g = 9.80665
-    start_h = start_point[1]
-    end_h = end_point[1]
-    return math.sqrt((2 + 0.8 * k) / g) * (2 / math.sqrt(2)) * (((h - end_h) ** 0.5) - ((h - start_h) ** 0.5))
-
-
-def get_h(mark):
-    return 0.64 + 0.01 * (10 - mark) * (math.sqrt(2) / 2)
